@@ -12,7 +12,8 @@
 >
     <testsuites>
         <testsuite name="Default">
-            <file>tests/dummyTest.php</file>
+            <!--<file>tests/RequestHandlerIndexTest.php</file>-->
+            <file>tests/RequestHandlerSearchTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

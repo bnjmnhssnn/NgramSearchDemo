@@ -4,21 +4,21 @@ const search = (function() {
     let searchInput; 
     let searchDelay;
 
-    const init = function(input_id, delay_ms) {
+    const init = function(options) {
 
-        document.querySelector('#' + input_id).addEventListener(
+        document.querySelector('#' + options.input_id).addEventListener(
             'input',
             function() {
                 clearInterval(searchDelay);
                 searchDelay = setInterval(function(){
                     if (inputValueHasChanged()) {
-                        search();
+                        search(options.api_url);
                     }
                     clearInterval(searchDelay);
-                }, delay_ms);
+                }, options.delay_ms);
             }
         );
-        searchInputEl = document.getElementById(input_id);
+        searchInputEl = document.getElementById(options.input_id);
     };
 
     const inputValueHasChanged = function () {
@@ -27,12 +27,12 @@ const search = (function() {
         return result;
     };
 
-    const search = function() {
+    const search = function(api_url) {
 
         console.log('search for ' + searchInput);
 
         let params = {
-            search: searchInput
+            search_string: searchInput
         };
         let request = new XMLHttpRequest();
         request.open('GET', '/search' + buildQuery(params), true);

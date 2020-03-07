@@ -1,5 +1,5 @@
 <?php
-function index_handler() : void
+function index_handler($http_client) : void
 {
     header("HTTP/1.1 200 OK");
     echo
@@ -14,7 +14,10 @@ function index_handler() : void
                 <script type="text/javascript" src="search.js"></script>
                 <script>
                     let initModules = function() {
-                        search.init(\'search-input\', 250);
+                        search.init({
+                            input_id: \'search-input\', 
+                            delay_ms: 250
+                        });
                     }
                     if (document.readyState != \'loading\'){
                         initModules();
