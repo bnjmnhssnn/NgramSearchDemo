@@ -75,20 +75,8 @@ class RequestHandlerSearchTest extends TestCase {
         $output = json_decode(ob_get_clean());
 
         $expected = json_decode(json_encode([
-            'data' => [
-                [
-                    'raw_value' => 'foo',
-                    'ngrams_hit' => 4,
-                    'html' => '<div>foo</div>'
-                ],
-                [
-                    'raw_value' => 'fo',
-                    'ngrams_hit' => 3,
-                    'html' => '<div>fo</div>'
-                ],
-            ]
+            'html' => '<div class="result-box"><div>foo</div><div>fo</div></div>'
         ]));
-
         $this->assertEquals($expected, $output);
     }
 

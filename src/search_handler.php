@@ -18,27 +18,26 @@ function search_handler(string $search_string, $http_client) : void
         case 200:
             header("HTTP/1.1 200 OK");
             header("Content-type: application/json");
-            echo processApiRes(json_decode($res->getBody()));
+            echo processApiRes(json_decode($res->getBody()), 8);
             break;
         default:
             header("HTTP/1.1 500 Internal Server Error");
     }
 }
 
-function processApiRes(stdClass $api_res) : string
+function processApiRes(stdClass $api_res, int $max_results) : string
 {
-    $data = array_map(
-        function($item) {
-            return [
-                'raw_value' => $item->value,
-                'ngrams_hit' => $item->ngrams_hit, 
-                'html' => '<div>' . $item->value . '</div>'
-            ];
-        },
-        $api_res->data
-    ); 
+    $result_box = 
+        '<div class="result-box">' 
+            . join(array_map(
+                function($item) {
+                    return '<div>' . $item->value . '</div>';
+                },
+                array_slice($api_res->data, 0, $max_results)
+            )) .
+        '</div>';
 
     return json_encode([
-        'data' => $data
+        'html' => $result_box
     ]);
 }

@@ -1,6 +1,7 @@
 const search = (function() {
 
     let searchInputEl;
+    let resultHookEl;
     let searchInput; 
     let searchDelay;
 
@@ -19,6 +20,7 @@ const search = (function() {
             }
         );
         searchInputEl = document.getElementById(options.input_id);
+        resultHookEl = document.getElementById(options.result_hook_id);
     };
 
     const inputValueHasChanged = function () {
@@ -27,10 +29,12 @@ const search = (function() {
         return result;
     };
 
-    const search = function(api_url) {
+    const search = function() {
 
-        console.log('search for ' + searchInput);
-
+        if(searchInput == '') {
+            removeResults();
+            return;
+        }
         let params = {
             search_string: searchInput
         };
@@ -39,10 +43,10 @@ const search = (function() {
 
         request.onload = function() {
             if (this.status >= 200 && this.status < 400) {
-                // Success!
-                console.log(this.response);
+                // Success
+                showResult(JSON.parse(this.response.trim()));
             } else {
-                // We reached our target server, but it returned an error
+                // Error
                 console.log(this.response);
 
             }
@@ -59,6 +63,19 @@ const search = (function() {
                 return key + '=' + encodeURIComponent(params[key]);
             }).join('&');
     };
+
+    const showResult = function(result) {
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = result.html;
+        removeResults();
+        resultHookEl.appendChild(wrapper);
+    }
+
+    const removeResults = function() {
+        while(resultHookEl.firstChild) {
+            resultHookEl.removeChild(resultHookEl.firstChild);
+        }
+    }
 
     return {
         init: init,

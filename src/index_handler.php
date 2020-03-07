@@ -15,7 +15,8 @@ function index_handler($http_client) : void
                 <script>
                     let initModules = function() {
                         search.init({
-                            input_id: \'search-input\', 
+                            input_id: \'search-input\',
+                            result_hook_id: \'result-hook\',
                             delay_ms: 250
                         });
                     }
@@ -44,10 +45,8 @@ function index_handler($http_client) : void
                                             autocomplete="off"
                                         />
                                     </div>
-                                    <div>
-                                        <button type="submit">Search</button>
-                                    </div>
                                 </form>
+                                <div id="result-hook"></div>
                             </div>
                         </td>
                     </tr>
