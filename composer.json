@@ -1,0 +1,13 @@
+{
+    "name": "bnjmnhssnn/ngram-search-demo",
+    "description": "Beschreibung",
+    "authors": [
+        {
+            "name": "Benjamin Hosseinian",
+            "email": "info@benjamin-hosseinian.de"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    }
+}
