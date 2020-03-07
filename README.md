@@ -1,7 +1,7 @@
 NgramSearchDemo
 ================
 
-NgramSearchDemo is a simple demo client for [ngram_search_repo].
+NgramSearchDemo is a simple demo client for [NgramSearch].
 
 
 Install
@@ -14,4 +14,4 @@ git clone https://github.com/bnjmnhssnn/NgramSearchDemo.git
 ```
 
 
-[ngram_search_repo]: https://github.com/bnjmnhssnn/NgramSearch "NgramSearch"
+[NgramSearch]: https://github.com/bnjmnhssnn/NgramSearch "NgramSearch"
