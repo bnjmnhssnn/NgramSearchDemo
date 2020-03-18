@@ -37,6 +37,14 @@ function index_handler($http_client) : void
                                         <h1>Ngram Search Demo</h1>
                                     </div>
                                     <div>
+                                        <table class="stats-table">
+                                            <tr>
+                                                <td>API server: <span id="stats-api-info">--</span></td> 
+                                                <td>API response time: <span id="stats-api-response-time">--</span></td> 
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div>
                                         <input 
                                             id="search-input"
                                             type="text"
