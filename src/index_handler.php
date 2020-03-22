@@ -39,8 +39,8 @@ function index_handler($http_client) : void
                                     <div>
                                         <table class="stats-table">
                                             <tr>
-                                                <td>API server: <span id="stats-api-info">--</span></td> 
-                                                <td>API response time: <span id="stats-api-response-time">--</span></td> 
+                                                <td>API query time: <span id="stats-api-query">--</span></td> 
+                                                <td>API response time: <span id="stats-api-response">--</span></td> 
                                             </tr>
                                         </table>
                                     </div>

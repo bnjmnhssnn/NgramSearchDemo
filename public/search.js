@@ -69,6 +69,8 @@ const search = (function() {
         wrapper.innerHTML = result.html;
         removeResults();
         resultHookEl.appendChild(wrapper);
+        document.getElementById('stats-api-query').innerHTML = result.api_query_time;
+        document.getElementById('stats-api-response').innerHTML = result.api_response_time;
     }
 
     const removeResults = function() {

@@ -4,8 +4,41 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e294d451a4917c772bbd556ada0294b2",
+    "content-hash": "adb2be243c42fb36843a5782401c77fe",
     "packages": [
+        {
+            "name": "bnjmnhssnn/string-matching",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bnjmnhssnn/StringMatching.git",
+                "reference": "1eba27dac7f9f5c97c840b9c06558ce52b1baf0a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bnjmnhssnn/StringMatching/zipball/1eba27dac7f9f5c97c840b9c06558ce52b1baf0a",
+                "reference": "1eba27dac7f9f5c97c840b9c06558ce52b1baf0a",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "StringMatching\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Benjamin Hosseinian",
+                    "email": "info@benjamin-hosseinian.de"
+                }
+            ],
+            "description": "Various combineable string matching/string comparison classes",
+            "time": "2020-03-22T10:23:27+00:00"
+        },
         {
             "name": "guzzlehttp/guzzle",
             "version": "6.5.2",
@@ -1758,7 +1791,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "bnjmnhssnn/string-matching": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
