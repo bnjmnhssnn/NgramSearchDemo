@@ -1,5 +1,5 @@
 <?php
-function index_handler($http_client) : void
+function run($http_client) : void
 {
     header("HTTP/1.1 200 OK");
     echo
