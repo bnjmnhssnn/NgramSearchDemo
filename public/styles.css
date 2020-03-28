@@ -20,23 +20,46 @@ table.skeleton {
     margin: 0 auto;
 }
 .main-box>form>div {
-    padding: 12px 0 12px 0;
+    padding: 6px 0 6px 0;
 }
 input#search-input {
     width: 100%;
 }
 .result-box {
     font-size: 12px;
+    color: dimgrey;
+}
+.result-box b {
+    color: black;
 }
 .stats-table {
     width: 100%;
     font-size: 12px;
-    color: orange;  
+    color: #0000EE;  
 }
 h1 {
     text-align: center;
     margin: 0;
 }
+.sub-heading {
+    text-align: center;
+    font-size: 12px;
+    color: dimgrey;
+}
 .stats-table td {
     text-align: center;
+}
+.footer {
+    text-align: center;
+    padding-top: 24px;
+}
+.github-link {
+    font-size: 12px;
+    display: inline-block;
+}
+.github-link svg {
+    fill: #0000EE;
+}
+.github-link:visited svg {
+    fill: #551A8B;
 }

@@ -34,11 +34,11 @@ function processApiRes(stdClass $api_res, string $search_string, int $max_result
 {
     $processed = array_map(
         function($item) use ($search_string){
-            $item->common_substrings = CommonSubstrings::find(
+            $substr_min_len = (mb_strlen(trim($search_string)) < 3) ? 2 : 3; // reject very short common substrings
+            $item->common_substrings = (new CommonSubstrings(
                 trim(mb_strtolower($search_string)), 
-                mb_strtolower($item->key), 
-                (mb_strlen(trim($search_string)) < 3) ? 2 : 3 // reject very short common substrings
-            );
+                mb_strtolower($item->key)
+            ))->removeOverlaps()->threshold($substr_min_len);
             return $item;
         },
         $api_res->data 
@@ -46,7 +46,7 @@ function processApiRes(stdClass $api_res, string $search_string, int $max_result
     $filtered = array_values(array_filter(
         $processed,
         function($item) {
-            return !empty($item->common_substrings);
+            return !empty($item->common_substrings->common_substrings);
         }
     )); 
     if (empty($filtered)) {
@@ -60,7 +60,7 @@ function processApiRes(stdClass $api_res, string $search_string, int $max_result
             '<div class="result-box">' 
                 . join(array_map(
                     function($item) {
-                        return '<div>' . $item->value . ' (' . substrLen($item->common_substrings) . ')</div>';
+                        return '<div>' . $item->common_substrings->emphasizedB('<b>', '</b>')  . '</div>';
                     },
                     array_slice($sorted, 0, $max_results)
                 )) .
@@ -77,23 +77,23 @@ function sortBySubstrLen(array $results) : array
 {
     $get_sorter = function($i = 0) use (&$get_sorter) {
         return function($a, $b) use ($i, $get_sorter) {
-            if (!isset($a->common_substrings[$i]) && !isset($b->common_substrings[$i])) {
+            if (!isset($a->common_substrings->common_substrings[$i]) && !isset($b->common_substrings->common_substrings[$i])) {
                 if (mb_strlen($a->value) === mb_strlen($b->value)) {
                     return strcasecmp($a->value, $b->value);
                 }
                 return (mb_strlen($a->value) < mb_strlen($b->value)) ? -1 : 1;   
             }
-            if (!isset($a->common_substrings[$i])) {
+            if (!isset($a->common_substrings->common_substrings[$i])) {
                 return 1;
             }
-            if (!isset($b->common_substrings[$i])) {
+            if (!isset($b->common_substrings->common_substrings[$i])) {
                 return -1;
             }
-            if (count($a->common_substrings[$i]) === count($b->common_substrings[$i])) {
+            if (count($a->common_substrings->common_substrings[$i]) === count($b->common_substrings->common_substrings[$i])) {
                 $i++;
                 return $get_sorter($i)($a, $b);
             }
-            return (count($a->common_substrings[$i]) > count($b->common_substrings[$i])) ? -1 : 1;
+            return (count($a->common_substrings->common_substrings[$i]) > count($b->common_substrings->common_substrings[$i])) ? -1 : 1;
         };
     };
     usort(
