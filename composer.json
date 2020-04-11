@@ -16,7 +16,6 @@
         "phpunit/phpunit": "^7.5"
     },
     "require": {
-        "guzzlehttp/guzzle": "^6.5",
-        "bnjmnhssnn/string-matching": "dev-master"
+        "guzzlehttp/guzzle": "^6.5"
     }
 }

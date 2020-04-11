@@ -1,5 +1,4 @@
 <?php
-use StringMatching\CommonSubstrings;
 
 function run(string $search_string, $http_client) : void
 {
@@ -32,37 +31,18 @@ function run(string $search_string, $http_client) : void
 
 function processApiRes(stdClass $api_res, string $search_string, int $max_results, float $api_response_time) : string
 {
-    $processed = array_map(
-        function($item) use ($search_string){
-            $substr_min_len = (mb_strlen(trim($search_string)) < 3) ? 2 : 3; // reject very short common substrings
-            $item->common_substrings = (new CommonSubstrings(
-                trim(mb_strtolower($search_string)), 
-                mb_strtolower($item->key)
-            ))->removeOverlaps()->threshold($substr_min_len);
-            return $item;
-        },
-        $api_res->data 
-    );
-    $filtered = array_values(array_filter(
-        $processed,
-        function($item) {
-            return !empty($item->common_substrings->common_substrings);
-        }
-    )); 
-    if (empty($filtered)) {
+    if (empty($api_res->data)) {
         $result_box = 
             '<div class="result-box">Nothing found...</div>';
     } else {
-
-        $sorted = sortBySubstrLen($filtered);
 
         $result_box = 
             '<div class="result-box">' 
                 . join(array_map(
                     function($item) {
-                        return '<div>' . $item->common_substrings->emphasizedB('<b>', '</b>')  . '</div>';
+                        return '<div>' . $item->value  . '</div>';
                     },
-                    array_slice($sorted, 0, $max_results)
+                    array_slice($api_res->data, 0, $max_results)
                 )) .
             '</div>';
     }
@@ -71,44 +51,4 @@ function processApiRes(stdClass $api_res, string $search_string, int $max_result
         'api_response_time' => round($api_response_time, 3) . 's',
         'api_query_time' => round($api_res->meta->duration, 3) . 's'
     ]);
-}
-
-function sortBySubstrLen(array $results) : array
-{
-    $get_sorter = function($i = 0) use (&$get_sorter) {
-        return function($a, $b) use ($i, $get_sorter) {
-            if (!isset($a->common_substrings->common_substrings[$i]) && !isset($b->common_substrings->common_substrings[$i])) {
-                if (mb_strlen($a->value) === mb_strlen($b->value)) {
-                    return strcasecmp($a->value, $b->value);
-                }
-                return (mb_strlen($a->value) < mb_strlen($b->value)) ? -1 : 1;   
-            }
-            if (!isset($a->common_substrings->common_substrings[$i])) {
-                return 1;
-            }
-            if (!isset($b->common_substrings->common_substrings[$i])) {
-                return -1;
-            }
-            if (count($a->common_substrings->common_substrings[$i]) === count($b->common_substrings->common_substrings[$i])) {
-                $i++;
-                return $get_sorter($i)($a, $b);
-            }
-            return (count($a->common_substrings->common_substrings[$i]) > count($b->common_substrings->common_substrings[$i])) ? -1 : 1;
-        };
-    };
-    usort(
-        $results,
-        $get_sorter()  
-    );
-    return $results;
-}
-
-function substrLen(array $common_substrings) : string
-{
-    return join(', ', array_map(
-        function($item) {
-            return count($item);
-        },
-        $common_substrings
-    ));
 }
