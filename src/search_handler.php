@@ -22,14 +22,14 @@ function run(string $search_string, $http_client) : void
         case 200:
             header("HTTP/1.1 200 OK");
             header("Content-type: application/json");
-            echo processApiRes(json_decode($res->getBody()), $search_string, 10, $time);
+            echo buildResponse(json_decode($res->getBody()), $search_string, 10, $time);
             break;
         default:
             header("HTTP/1.1 500 Internal Server Error");
     }
 }
 
-function processApiRes(stdClass $api_res, string $search_string, int $max_results, float $api_response_time) : string
+function buildResponse(stdClass $api_res, string $search_string, int $max_results, float $api_response_time) : string
 {
     if (empty($api_res->data)) {
         $result_box = 
@@ -42,7 +42,7 @@ function processApiRes(stdClass $api_res, string $search_string, int $max_result
                     function($item) {
                         return '<div>' . $item->value  . '</div>';
                     },
-                    array_slice($api_res->data, 0, $max_results)
+                    processApiData($api_res->data, $max_results)
                 )) .
             '</div>';
     }
@@ -52,3 +52,70 @@ function processApiRes(stdClass $api_res, string $search_string, int $max_result
         'api_query_time' => round($api_res->meta->duration, 3) . 's'
     ]);
 }
+
+function processApiData(array $api_data, int $max_results) : array
+{
+    $api_data = array_map(
+        function($item) {
+            $item->chain_lengths = extractChainLengths($item->ngram_details);
+            return $item;    
+        },
+        $api_data
+    );  
+    usort($api_data, getSorter());
+    return array_slice($api_data, 0, $max_results);
+}
+
+function getSorter($i = 0) : Closure 
+{
+    return function($a, $b) use (&$sort_by_chain_lengths, $i) {
+        if (isset($a->chain_lengths[$i]) && !isset($b->chain_lengths[$i])) {
+            return -1;
+        }
+        if (!isset($a->chain_lengths[$i]) && isset($b->chain_lengths[$i])) {
+            return 1;
+        }
+        if (!isset($a->chain_lengths[$i]) && !isset($b->chain_lengths[$i])) {
+            return 0;
+        }
+        if($a->chain_lengths[$i] === $b->chain_lengths[$i]) {
+            $i++;
+            return getSorter($i)($a, $b);
+        }
+        return ($a->chain_lengths[$i] > $b->chain_lengths[$i]) ? -1 : 1;
+    };
+}
+
+function extractNgramPositions(array $ngram_details) : array
+{
+    $positions = array_reduce(
+        array_column($ngram_details, 'pos_in_key'),
+        function($carry, $item) {
+            return array_merge($carry, explode(',', $item));
+        },
+        []  
+    );
+    sort($positions);
+    return $positions;
+}
+
+function extractChainLengths(array $ngram_details) : array
+{
+    $ngram_positions = extractNgramPositions($ngram_details);
+    $chain_lengths = [];
+    $curr = 0;
+    for($i = 0; $i < count($ngram_positions); $i++) {
+        if($i === 0 || $ngram_positions[$i] == ($ngram_positions[$i - 1] + 1)) {
+            $curr++;
+        } elseif ($curr > 0) {
+            $chain_lengths[] = $curr; 
+            $curr = 1;   
+        }
+    }
+    if($curr > 0) {
+        $chain_lengths[] = $curr;
+    }
+    rsort($chain_lengths);
+    return $chain_lengths;
+}
+

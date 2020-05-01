@@ -13,11 +13,8 @@
 >
     <testsuites>
         <testsuite name="Default">
-            <!--
             <file>tests/RequestHandlerIndexTest.php</file>
             <file>tests/RequestHandlerSearchTest.php</file>
-            -->
-            <file>tests/ScoreCalculatorTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

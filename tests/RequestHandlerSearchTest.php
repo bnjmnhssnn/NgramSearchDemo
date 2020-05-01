@@ -23,17 +23,17 @@ class RequestHandlerSearchTest extends TestCase {
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
         ob_start();
-        search_handler('http://foo.bar', $client);
+        run('http://foo.bar', $client);
         $output = json_decode(ob_get_clean());
         $this->assertSame(null, $output);
 
         ob_start();
-        search_handler('http://foo.bar', $client);
+        run('http://foo.bar', $client);
         $output = json_decode(ob_get_clean());
         $this->assertSame(null, $output);
 
         ob_start();
-        search_handler('http://foo.bar', $client);
+        run('http://foo.bar', $client);
         $output = json_decode(ob_get_clean());
         $this->assertSame(null, $output);
     }
@@ -46,17 +46,35 @@ class RequestHandlerSearchTest extends TestCase {
         $mock_reponse_body = json_encode([
             'data' => [
                 [
-                    'value' => 'foo',
+                    'id' => 123,
+                    'key' => 'foo the movie',
+                    'value' => 'Foo The Movie',
                     'ngrams_hit' => 4,
-                    'indexed_at' => 123456789
+                    'ngram_details' => [
+                        ['value' => ' f', 'pos_in_key' => 0, 'pos_in_search' => 0],
+                        ['value' => 'fo', 'pos_in_key' => 1, 'pos_in_search' => 1],
+                        ['value' => 'oo', 'pos_in_key' => 2, 'pos_in_search' => 2],
+                        ['value' => 'o ', 'pos_in_key' => 3, 'pos_in_search' => 3],
+                    ]
                 ],
                 [
-                    'value' => 'fo',
+                    'id' => 456,
+                    'key' => 'the fool on the hill',
+                    'value' => 'The Fool On The Hill',
                     'ngrams_hit' => 3,
-                    'indexed_at' => 123456789
+                    'ngram_details' => [
+                        ['value' => ' f', 'pos_in_key' => 4, 'pos_in_search' => 0],
+                        ['value' => 'fo', 'pos_in_key' => 5, 'pos_in_search' => 1],
+                        ['value' => 'oo', 'pos_in_key' => 6, 'pos_in_search' => 2],
+                    ]
                 ],
             ],
-            'meta' => [],
+            'meta' => [
+                'search_ngrams' => [' f', 'fo', 'oo', 'o '],
+                'result_length' => 2,
+                'duration' => 0.123,
+                'peak_memory' => '1.23MB'
+            ],
             'links' => []
         ]);
 
@@ -71,13 +89,12 @@ class RequestHandlerSearchTest extends TestCase {
         $client = new Client(['handler' => $handlerStack]);
 
         ob_start();
-        search_handler('foo', $client);
+        run('foo', $client);
         $output = json_decode(ob_get_clean());
-
-        $expected = json_decode(json_encode([
-            'html' => '<div class="result-box"><div>foo</div><div>fo</div></div>'
-        ]));
-        $this->assertEquals($expected, $output);
+        $this->assertEquals(
+            '<div class="result-box"><div>Foo The Movie</div><div>The Fool On The Hill</div></div>', 
+            $output->html
+        );
     }
 
 }
